@@ -306,6 +306,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\README"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
