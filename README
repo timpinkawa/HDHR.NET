@@ -1,15 +1,18 @@
-HDHR.NET is a managed wrapper for libhdhomerun written in C++ CLI. It allows all languages running under the 
-Common Language Runtime (C#, VB, F#, etc.) to control HDHomeRun devices. This library does not expose all 
-functionality of libhdhomerun, but instead tries to provide support for commonly used features with an interface
-that is familiar for .NET programmers.
+HDHR.NET is a managed wrapper for libhdhomerun written in C++ CLI. It allows
+all languages running under the Common Language Runtime (C#, VB, F#, etc.) to
+control HDHomeRun devices. This library does not expose all functionality of
+libhdhomerun, but instead tries to provide support for commonly used features
+with an interface that is familiar for .NET programmers.
 
-libhdhomerun is a C library by SiliconDust to control their HDHomeRun line of network-attached TV tuners.
+libhdhomerun is a C library by SiliconDust to control their HDHomeRun line of
+network-attached TV tuners.
 
 HDHR.NET: http://www.timpinkawa.net/hdhr
 SiliconDust: http://www.silicondust.com
 libhdhomerun: http://www.silicondust.com/support/hdhomerun/downloads/linux/
 
 This library was developed and tested with Visual C++ 2008 Express.
- - It should work with Visual C++ 2010 Express with the project conversion wizard.
+ - It should work with Visual C++ 2010 Express with the project conversion
+   wizard.
  - It may work with Visual C++ 2005 Express with a custom project file.
  - It definitely will not compile with Visual Studio .NET 2003 or prior.
