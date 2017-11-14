@@ -1,12 +1,12 @@
 /*
  * hdhomerun_os_windows.c
  *
- * Copyright © 2006-2010 Silicondust USA Inc. <www.silicondust.com>.
+ * Copyright © 2006-2017 Silicondust USA Inc. <www.silicondust.com>.
  *
- * This library is free software; you can redistribute it and/or 
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,61 +14,44 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * As a special exception to the GNU Lesser General Public License,
- * you may link, statically or dynamically, an application with a
- * publicly distributed version of the Library to produce an
- * executable file containing portions of the Library, and
- * distribute that executable file under terms of your choice,
- * without any of the additional requirements listed in clause 4 of
- * the GNU Lesser General Public License.
- * 
- * By "a publicly distributed version of the Library", we mean
- * either the unmodified Library as distributed by Silicondust, or a
- * modified version of the Library that is distributed under the
- * conditions defined in the GNU Lesser General Public License.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "hdhomerun_os.h"
+#include "hdhomerun.h"
 
+#if defined(_WINRT)
 uint32_t random_get32(void)
 {
-	HCRYPTPROV hProv;
-	if (!CryptAcquireContext(&hProv, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
-		return (uint32_t)rand();
+	return (uint32_t)getcurrenttime();
+}
+#else
+uint32_t random_get32(void)
+{
+	static DWORD random_get32_context_tls = 0xFFFFFFFF;
+	if (random_get32_context_tls == 0xFFFFFFFF) {
+		random_get32_context_tls = TlsAlloc();
+	}
+
+	HCRYPTPROV *phProv = (HCRYPTPROV *)TlsGetValue(random_get32_context_tls);
+	if (!phProv) {
+		phProv = (HCRYPTPROV *)calloc(1, sizeof(HCRYPTPROV));
+		CryptAcquireContext(phProv, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+		TlsSetValue(random_get32_context_tls, phProv);
 	}
 
 	uint32_t Result;
-	CryptGenRandom(hProv, sizeof(Result), (BYTE*)&Result);
+	if (!CryptGenRandom(*phProv, sizeof(Result), (BYTE *)&Result)) {
+		return (uint32_t)getcurrenttime();
+	}
 
-	CryptReleaseContext(hProv, 0);
 	return Result;
 }
+#endif
 
 uint64_t getcurrenttime(void)
 {
-	static pthread_mutex_t lock = INVALID_HANDLE_VALUE;
-	static uint64_t result = 0;
-	static uint32_t previous_time = 0;
-
-	/* Initialization is not thread safe. */
-	if (lock == INVALID_HANDLE_VALUE) {
-		pthread_mutex_init(&lock, NULL);
-	}
-
-	pthread_mutex_lock(&lock);
-
-	uint32_t current_time = GetTickCount();
-
-	if (current_time > previous_time) {
-		result += current_time - previous_time;
-	}
-
-	previous_time = current_time;
-
-	pthread_mutex_unlock(&lock);
-	return result;
+	return GetTickCount64();
 }
 
 void msleep_approx(uint64_t ms)
@@ -90,60 +73,122 @@ void msleep_minimum(uint64_t ms)
 	}
 }
 
-int pthread_create(pthread_t *tid, void *attr, LPTHREAD_START_ROUTINE start, void *arg)
+struct thread_task_execute_args_t {
+	thread_task_func_t func;
+	void *arg;
+};
+
+static DWORD WINAPI thread_task_execute(void *arg)
 {
-	*tid = CreateThread(NULL, 0, start, arg, 0, NULL);
-	if (!*tid) {
-		return (int)GetLastError();
-	}
+	struct thread_task_execute_args_t *execute_args = (struct thread_task_execute_args_t *)arg;
+	execute_args->func(execute_args->arg);
+	free(execute_args);
 	return 0;
 }
 
-int pthread_join(pthread_t tid, void **value_ptr)
+bool thread_task_create(thread_task_t *tid, thread_task_func_t func, void *arg)
+{
+	struct thread_task_execute_args_t *execute_args = (struct thread_task_execute_args_t *)malloc(sizeof(struct thread_task_execute_args_t));
+	if (!execute_args) {
+		return false;
+	}
+
+	execute_args->func = func;
+	execute_args->arg = arg;
+
+	*tid = CreateThread(NULL, 0, thread_task_execute, execute_args, 0, NULL);
+	if (!*tid) {
+		free(execute_args);
+		return false;
+	}
+
+	return true;
+}
+
+void thread_task_join(thread_task_t tid)
 {
 	while (1) {
 		DWORD ExitCode = 0;
 		if (!GetExitCodeThread(tid, &ExitCode)) {
-			return (int)GetLastError();
+			return;
 		}
 		if (ExitCode != STILL_ACTIVE) {
-			return 0;
+			return;
 		}
 	}
 }
 
-void pthread_mutex_init(pthread_mutex_t *mutex, void *attr)
+void thread_mutex_init(thread_mutex_t *mutex)
 {
-	*mutex = CreateMutex(NULL, FALSE, NULL);
+	*mutex = CreateMutex(NULL, false, NULL);
 }
 
-void pthread_mutex_lock(pthread_mutex_t *mutex)
+void thread_mutex_dispose(thread_mutex_t *mutex)
+{
+	CloseHandle(*mutex);
+}
+
+void thread_mutex_lock(thread_mutex_t *mutex)
 {
 	WaitForSingleObject(*mutex, INFINITE);
 }
 
-void pthread_mutex_unlock(pthread_mutex_t *mutex)
+void thread_mutex_unlock(thread_mutex_t *mutex)
 {
 	ReleaseMutex(*mutex);
 }
 
-/*
- * The console output format should be set to UTF-8, however in XP and Vista this breaks batch file processing.
- * Attempting to restore on exit fails to restore if the program is terminated by the user.
- * Solution - set the output format each printf.
- */
-void console_vprintf(const char *fmt, va_list ap)
+void thread_cond_init(thread_cond_t *cond)
 {
-	UINT cp = GetConsoleOutputCP();
-	SetConsoleOutputCP(CP_UTF8);
-	vprintf(fmt, ap);
-	SetConsoleOutputCP(cp);
+	*cond = CreateEvent(NULL, false, false, NULL);
 }
 
-void console_printf(const char *fmt, ...)
+void thread_cond_dispose(thread_cond_t *cond)
+{
+	CloseHandle(*cond);
+}
+
+void thread_cond_signal(thread_cond_t *cond)
+{
+	SetEvent(*cond);
+}
+
+void thread_cond_wait(thread_cond_t *cond)
+{
+	WaitForSingleObject(*cond, INFINITE);
+}
+
+void thread_cond_wait_with_timeout(thread_cond_t *cond, uint64_t max_wait_time)
+{
+	WaitForSingleObject(*cond, (DWORD)max_wait_time);
+}
+
+bool hdhomerun_vsprintf(char *buffer, char *end, const char *fmt, va_list ap)
+{
+	if (buffer >= end) {
+		return false;
+	}
+
+	int length = _vsnprintf(buffer, end - buffer - 1, fmt, ap);
+	if (length < 0) {
+		*buffer = 0;
+		return false;
+	}
+
+	if (buffer + length + 1 > end) {
+		*(end - 1) = 0;
+		return false;
+
+	}
+
+	return true;
+}
+
+bool hdhomerun_sprintf(char *buffer, char *end, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	console_vprintf(fmt, ap);
+	bool result = hdhomerun_vsprintf(buffer, end, fmt, ap);
 	va_end(ap);
+	return result;
 }

@@ -49,7 +49,7 @@ public:
 		hd = hdhomerun_device_create_from_str(static_cast<char*>(p.ToPointer()), NULL);
 		Marshal::FreeHGlobal(p);
 		uint32_t id = ::hdhomerun_device_get_device_id_requested(hd);
-		bool_t valid = ::hdhomerun_discover_validate_device_id(id);
+		bool valid = ::hdhomerun_discover_validate_device_id(id);
 		
 	}
 

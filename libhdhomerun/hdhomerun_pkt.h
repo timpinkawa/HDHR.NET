@@ -1,12 +1,12 @@
 /*
  * hdhomerun_pkt.h
  *
- * Copyright © 2005-2006 Silicondust USA Inc. <www.silicondust.com>.
+ * Copyright © 2006-2015 Silicondust USA Inc. <www.silicondust.com>.
  *
- * This library is free software; you can redistribute it and/or 
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,20 +14,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * As a special exception to the GNU Lesser General Public License,
- * you may link, statically or dynamically, an application with a
- * publicly distributed version of the Library to produce an
- * executable file containing portions of the Library, and
- * distribute that executable file under terms of your choice,
- * without any of the additional requirements listed in clause 4 of
- * the GNU Lesser General Public License.
- * 
- * By "a publicly distributed version of the Library", we mean
- * either the unmodified Library as distributed by Silicondust, or a
- * modified version of the Library that is distributed under the
- * conditions defined in the GNU Lesser General Public License.
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #ifdef __cplusplus
 extern "C" {
@@ -138,9 +126,14 @@ extern "C" {
 #define HDHOMERUN_TAG_GETSET_VALUE 0x04
 #define HDHOMERUN_TAG_GETSET_LOCKKEY 0x15
 #define HDHOMERUN_TAG_ERROR_MESSAGE 0x05
+#define HDHOMERUN_TAG_TUNER_COUNT 0x10
+#define HDHOMERUN_TAG_DEVICE_AUTH_BIN 0x29
+#define HDHOMERUN_TAG_BASE_URL 0x2A
+#define HDHOMERUN_TAG_DEVICE_AUTH_STR 0x2B
 
 #define HDHOMERUN_DEVICE_TYPE_WILDCARD 0xFFFFFFFF
 #define HDHOMERUN_DEVICE_TYPE_TUNER 0x00000001
+#define HDHOMERUN_DEVICE_TYPE_STORAGE 0x00000005
 #define HDHOMERUN_DEVICE_ID_WILDCARD 0xFFFFFFFF
 
 #define HDHOMERUN_MIN_PEEK_LENGTH 4
@@ -153,24 +146,25 @@ struct hdhomerun_pkt_t {
 	uint8_t buffer[3074];
 };
 
-extern LIBTYPE struct hdhomerun_pkt_t *hdhomerun_pkt_create(void);
-extern LIBTYPE void hdhomerun_pkt_destroy(struct hdhomerun_pkt_t *pkt);
-extern LIBTYPE void hdhomerun_pkt_reset(struct hdhomerun_pkt_t *pkt);
+extern LIBHDHOMERUN_API struct hdhomerun_pkt_t *hdhomerun_pkt_create(void);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_destroy(struct hdhomerun_pkt_t *pkt);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_reset(struct hdhomerun_pkt_t *pkt);
 
-extern LIBTYPE uint8_t hdhomerun_pkt_read_u8(struct hdhomerun_pkt_t *pkt);
-extern LIBTYPE uint16_t hdhomerun_pkt_read_u16(struct hdhomerun_pkt_t *pkt);
-extern LIBTYPE uint32_t hdhomerun_pkt_read_u32(struct hdhomerun_pkt_t *pkt);
-extern LIBTYPE size_t hdhomerun_pkt_read_var_length(struct hdhomerun_pkt_t *pkt);
-extern LIBTYPE uint8_t *hdhomerun_pkt_read_tlv(struct hdhomerun_pkt_t *pkt, uint8_t *ptag, size_t *plength);
+extern LIBHDHOMERUN_API uint8_t hdhomerun_pkt_read_u8(struct hdhomerun_pkt_t *pkt);
+extern LIBHDHOMERUN_API uint16_t hdhomerun_pkt_read_u16(struct hdhomerun_pkt_t *pkt);
+extern LIBHDHOMERUN_API uint32_t hdhomerun_pkt_read_u32(struct hdhomerun_pkt_t *pkt);
+extern LIBHDHOMERUN_API size_t hdhomerun_pkt_read_var_length(struct hdhomerun_pkt_t *pkt);
+extern LIBHDHOMERUN_API uint8_t *hdhomerun_pkt_read_tlv(struct hdhomerun_pkt_t *pkt, uint8_t *ptag, size_t *plength);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_read_mem(struct hdhomerun_pkt_t *pkt, void *mem, size_t length);
 
-extern LIBTYPE void hdhomerun_pkt_write_u8(struct hdhomerun_pkt_t *pkt, uint8_t v);
-extern LIBTYPE void hdhomerun_pkt_write_u16(struct hdhomerun_pkt_t *pkt, uint16_t v);
-extern LIBTYPE void hdhomerun_pkt_write_u32(struct hdhomerun_pkt_t *pkt, uint32_t v);
-extern LIBTYPE void hdhomerun_pkt_write_var_length(struct hdhomerun_pkt_t *pkt, size_t v);
-extern LIBTYPE void hdhomerun_pkt_write_mem(struct hdhomerun_pkt_t *pkt, const void *mem, size_t length);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_write_u8(struct hdhomerun_pkt_t *pkt, uint8_t v);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_write_u16(struct hdhomerun_pkt_t *pkt, uint16_t v);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_write_u32(struct hdhomerun_pkt_t *pkt, uint32_t v);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_write_var_length(struct hdhomerun_pkt_t *pkt, size_t v);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_write_mem(struct hdhomerun_pkt_t *pkt, const void *mem, size_t length);
 
-extern LIBTYPE bool_t hdhomerun_pkt_open_frame(struct hdhomerun_pkt_t *pkt, uint16_t *ptype);
-extern LIBTYPE void hdhomerun_pkt_seal_frame(struct hdhomerun_pkt_t *pkt, uint16_t frame_type);
+extern LIBHDHOMERUN_API int hdhomerun_pkt_open_frame(struct hdhomerun_pkt_t *pkt, uint16_t *ptype);
+extern LIBHDHOMERUN_API void hdhomerun_pkt_seal_frame(struct hdhomerun_pkt_t *pkt, uint16_t frame_type);
 
 #ifdef __cplusplus
 }

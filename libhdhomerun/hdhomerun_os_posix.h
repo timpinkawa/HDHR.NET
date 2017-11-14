@@ -1,5 +1,5 @@
 /*
- * hdhomerun_os_windows.h
+ * hdhomerun_os_posix.h
  *
  * Copyright © 2006-2017 Silicondust USA Inc. <www.silicondust.com>.
  *
@@ -18,60 +18,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifdef _WINRT
-#include <SDKDDKVer.h>
-#endif
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT _WIN32_WINNT_VISTA
-#endif
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-#ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#endif
-
-#include <winsock2.h>
-#include <windows.h>
-#include <ws2tcpip.h>
-#include <wspiapi.h>
+#define _FILE_OFFSET_BITS 64
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <signal.h>
-#include <time.h>
 #include <sys/types.h>
-
-#ifdef LIBHDHOMERUN_DLLEXPORT
-#define LIBHDHOMERUN_API __declspec(dllexport)
-#endif
-#ifdef LIBHDHOMERUN_DLLIMPORT
-#define LIBHDHOMERUN_API __declspec(dllimport)
-#endif
-#ifndef LIBHDHOMERUN_API
-#define LIBHDHOMERUN_API
-#endif
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <poll.h>
+#include <netdb.h>
+#include <pthread.h>
 
 typedef void (*sig_t)(int);
 typedef void (*thread_task_func_t)(void *arg);
-typedef HANDLE thread_task_t;
-typedef HANDLE thread_mutex_t;
-typedef HANDLE thread_cond_t;
+typedef pthread_t thread_task_t;
+typedef pthread_mutex_t thread_mutex_t;
 
-#if !defined(va_copy)
-#define va_copy(x, y) x = y
-#endif
+typedef struct {
+	volatile bool signaled;
+	pthread_mutex_t lock;
+	pthread_cond_t cond;
+} thread_cond_t;
 
-#define atoll _atoi64
-#define strdup _strdup
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define fseeko _fseeki64
-#define ftello _ftelli64
+#define LIBHDHOMERUN_API
 
 #ifdef __cplusplus
 extern "C" {
