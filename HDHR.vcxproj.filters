@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="libhdhomerun">
+      <UniqueIdentifier>{58bb5678-7ad1-4d0c-8cbb-cf1de67c1d9d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HDHR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_channels.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_channelscan.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_control.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_debug.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_device.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_device_selector.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_discover.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_os_windows.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_pkt.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_sock_windows.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+    <ClCompile Include="libhdhomerun\hdhomerun_video.c">
+      <Filter>libhdhomerun</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_channels.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_channelscan.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_control.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_debug.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_device.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_device_selector.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_discover.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_os.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_os_windows.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_pkt.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_sock.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_types.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+    <ClInclude Include="libhdhomerun\hdhomerun_video.h">
+      <Filter>libhdhomerun</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README" />
+  </ItemGroup>
+</Project>
